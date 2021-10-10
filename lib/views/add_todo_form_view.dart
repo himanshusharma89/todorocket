@@ -1,6 +1,4 @@
-import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
-import 'package:todorocket/models/ModelProvider.dart';
 import 'package:todorocket/widgets/text_form_filed_shadow.dart';
 
 class AddTodoFormView extends StatefulWidget {
@@ -18,11 +16,8 @@ class _AddTodoFormViewState extends State<AddTodoFormView> {
     String name = _nameController.text;
     String description = _descriptionController.text;
 
-    Todo newTodo =
-        Todo(name: name, description: description, isTaskCompleted: false);
-
     try {
-      await Amplify.DataStore.save(newTodo);
+      // save new Todo
       Navigator.pop(context);
     } catch (e) {
       debugPrint('Error occured while saving Todo $e');

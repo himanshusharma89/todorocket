@@ -1,30 +1,23 @@
-import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
-import 'package:todorocket/models/Todo.dart';
 
 class TodoItem extends StatelessWidget {
   final double iconSize = 24.0;
-  final Todo todo;
 
-  const TodoItem({required this.todo, Key? key}) : super(key: key);
+  const TodoItem({Key? key}) : super(key: key);
 
   void _deleteTodo(BuildContext context) async {
     try {
       // to delete data from DataStore, we pass the model instance to
       // Amplify.DataStore.delete()
-      await Amplify.DataStore.delete(todo);
     } catch (e) {
       print('An error occurred while deleting Todo: $e');
     }
   }
 
   Future<void> _toggleIsComplete() async {
-    // copy the Todo we wish to update, but with updated properties
-    Todo updatedTodo = todo.copyWith(isTaskCompleted: !todo.isTaskCompleted);
     try {
       // to update data in DataStore, we again pass an instance of a model to
       // Amplify.DataStore.save()
-      await Amplify.DataStore.save(updatedTodo);
     } catch (e) {
       print('An error occurred while saving Todo: $e');
     }
@@ -46,18 +39,14 @@ class TodoItem extends StatelessWidget {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(todo.name,
-                    style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold)),
-                Text(todo.description ?? 'No Description'),
+              children: const [
+                Text('todo name',
+                    style:
+                        TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                Text('No Description'),
               ],
             ),
-            Icon(
-                todo.isTaskCompleted
-                    ? Icons.check_box
-                    : Icons.check_box_outline_blank,
-                size: iconSize),
+            Icon(Icons.check_box, size: iconSize),
           ]),
         ),
       ),
