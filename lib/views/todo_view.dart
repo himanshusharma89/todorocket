@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:amplify_api/amplify_api.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,8 @@ class _TodosViewState extends State<TodosView> {
   // Amplify Plugins
   final AmplifyDataStore _dataStorePlugin =
       AmplifyDataStore(modelProvider: ModelProvider.instance);
+  final AmplifyAPI _apiPlugin = AmplifyAPI();
+  final AmplifyAuthCognito _authPlugin = AmplifyAuthCognito();
 
   // subscription to Todo model update events - to be initialized at runtime
   late StreamSubscription _subscription;
@@ -67,10 +71,9 @@ class _TodosViewState extends State<TodosView> {
   Future<void> _configureAmplify() async {
     try {
       // add AMplify Plugins
-      await Amplify.addPlugins([_dataStorePlugin]);
+      await Amplify.addPlugins([_dataStorePlugin, _apiPlugin, _authPlugin]);
 
       await Amplify.configure(amplifyconfig);
-      print("Configured");
     } catch (err) {
       debugPrint('Erro occured while configuring Amplify $err');
     }
