@@ -1,39 +1,95 @@
+import 'dart:async';
+
+import 'package:amplify_datastore/amplify_datastore.dart';
+import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
+import 'package:todorocket/amplifyconfiguration.dart';
+import 'package:todorocket/models/ModelProvider.dart';
 import 'package:todorocket/models/Todo.dart';
 import 'package:todorocket/widgets/todo_item.dart';
 
-import 'add_todo_form.dart';
+import 'add_todo_form_view.dart';
 
-class TodosPage extends StatefulWidget {
+class TodosView extends StatefulWidget {
   final String title;
-  const TodosPage({required this.title, Key? key}) : super(key: key);
+  const TodosView({required this.title, Key? key}) : super(key: key);
   @override
-  _TodosPageState createState() => _TodosPageState();
+  _TodosViewState createState() => _TodosViewState();
 }
 
-class _TodosPageState extends State<TodosPage> {
+class _TodosViewState extends State<TodosView> {
+  bool _isLoading = true;
+
+  List<Todo> _todos = [];
+
+  // Amplify Plugins
+  final AmplifyDataStore _dataStorePlugin =
+      AmplifyDataStore(modelProvider: ModelProvider.instance);
+
+  // subscription to Todo model update events - to be initialized at runtime
+  late StreamSubscription _subscription;
+
   @override
   void initState() {
-    // to be filled in a later step
+    // initialize the app
+    _initializeApp();
     super.initState();
   }
 
   @override
   void dispose() {
-    // to be filled in a later step
+    // cancel the subscription when the state is removed from the tree
+    _subscription.cancel();
     super.dispose();
   }
 
   Future<void> _initializeApp() async {
-    // to be filled in a later step
+    // configure Amplify
+    if (!Amplify.isConfigured) {
+      await _configureAmplify();
+    }
+    // .then((value) => _fetchTodos());
+
+    // fetch the Todo from DataStore
+    // _fetchTodos();
+
+    _subscription = Amplify.DataStore.observe(Todo.classType).listen((e) {
+      _fetchTodos();
+    });
+
+    await _fetchTodos();
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> _configureAmplify() async {
-    // to be filled in a later step
+    try {
+      // add AMplify Plugins
+      await Amplify.addPlugins([_dataStorePlugin]);
+
+      await Amplify.configure(amplifyconfig);
+      print("Configured");
+    } catch (err) {
+      debugPrint('Erro occured while configuring Amplify $err');
+    }
   }
 
   Future<void> _fetchTodos() async {
-    // to be filled in a later step
+    try {
+      // query for all Todo entries by passing the Todo classType to
+      // Amplify.DataStore.query()
+      List<Todo> updatedTodos = await Amplify.DataStore.query(Todo.classType);
+
+      // update the ui state to reflect fetched todos
+      print(updatedTodos);
+      setState(() {
+        _todos = updatedTodos;
+      });
+    } catch (e) {
+      print('An error occurred while querying Todos: $e');
+    }
   }
 
   @override
@@ -45,10 +101,10 @@ class _TodosPageState extends State<TodosPage> {
           style: const TextStyle(color: Colors.black),
         ),
       ),
-      body: Center(child: CircularProgressIndicator()),
-      // body: _isLoading
-      //     ? Center(child: CircularProgressIndicator())
-      //     : TodosList(todos: _todos),
+      // body: const Center(child: CircularProgressIndicator()),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : TodosList(todos: _todos),
       floatingActionButton: SizedBox(
         width: MediaQuery.of(context).size.width * .9,
         height: kToolbarHeight,
@@ -56,7 +112,7 @@ class _TodosPageState extends State<TodosPage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AddTodoForm()),
+              MaterialPageRoute(builder: (context) => const AddTodoFormView()),
             );
           },
           child: const Text('Add Todo'),

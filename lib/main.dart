@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
               elevation: 0,
               backgroundColor: Colors.transparent,
               iconTheme: IconThemeData(color: Colors.black))),
-      home: const TodosPage(title: 'Todo Rocket'),
+      home: const TodosView(title: 'Todo Rocket'),
     );
   }
 }

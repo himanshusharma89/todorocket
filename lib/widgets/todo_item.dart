@@ -1,3 +1,4 @@
+import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
 import 'package:todorocket/models/Todo.dart';
 
@@ -8,11 +9,25 @@ class TodoItem extends StatelessWidget {
   const TodoItem({required this.todo, Key? key}) : super(key: key);
 
   void _deleteTodo(BuildContext context) async {
-    // to be filled in a later step
+    try {
+      // to delete data from DataStore, we pass the model instance to
+      // Amplify.DataStore.delete()
+      await Amplify.DataStore.delete(todo);
+    } catch (e) {
+      print('An error occurred while deleting Todo: $e');
+    }
   }
 
   Future<void> _toggleIsComplete() async {
-    // to be filled in a later step
+    // copy the Todo we wish to update, but with updated properties
+    Todo updatedTodo = todo.copyWith(isTaskCompleted: !todo.isTaskCompleted);
+    try {
+      // to update data in DataStore, we again pass an instance of a model to
+      // Amplify.DataStore.save()
+      await Amplify.DataStore.save(updatedTodo);
+    } catch (e) {
+      print('An error occurred while saving Todo: $e');
+    }
   }
 
   @override
@@ -27,17 +42,16 @@ class TodoItem extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Row(children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(todo.name,
-                      style:
-                          const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  Text(todo.description ?? 'No Description'),
-                ],
-              ),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(todo.name,
+                    style: const TextStyle(
+                        fontSize: 22, fontWeight: FontWeight.bold)),
+                Text(todo.description ?? 'No Description'),
+              ],
             ),
             Icon(
                 todo.isTaskCompleted

@@ -1,19 +1,32 @@
+import 'package:amplify_flutter/amplify.dart';
 import 'package:flutter/material.dart';
+import 'package:todorocket/models/ModelProvider.dart';
 import 'package:todorocket/widgets/text_form_filed_shadow.dart';
 
-class AddTodoForm extends StatefulWidget {
-  const AddTodoForm({Key? key}) : super(key: key);
+class AddTodoFormView extends StatefulWidget {
+  const AddTodoFormView({Key? key}) : super(key: key);
 
   @override
-  _AddTodoFormState createState() => _AddTodoFormState();
+  _AddTodoFormViewState createState() => _AddTodoFormViewState();
 }
 
-class _AddTodoFormState extends State<AddTodoForm> {
+class _AddTodoFormViewState extends State<AddTodoFormView> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
 
   Future<void> _saveTodo() async {
-    // to be filled in a later step
+    String name = _nameController.text;
+    String description = _descriptionController.text;
+
+    Todo newTodo =
+        Todo(name: name, description: description, isTaskCompleted: false);
+
+    try {
+      await Amplify.DataStore.save(newTodo);
+      Navigator.pop(context);
+    } catch (e) {
+      debugPrint('Error occured while saving Todo $e');
+    }
   }
 
   @override
