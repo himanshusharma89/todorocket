@@ -13,6 +13,7 @@ class _AddTodoFormViewState extends State<AddTodoFormView> {
   final _descriptionController = TextEditingController();
 
   Future<void> _saveTodo() async {
+    // these fields will be used later
     String name = _nameController.text;
     String description = _descriptionController.text;
 

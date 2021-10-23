@@ -12,6 +12,7 @@ class TodosView extends StatefulWidget {
 }
 
 class _TodosViewState extends State<TodosView> {
+  // this field will be used later
   bool _isLoading = true;
 
   @override
