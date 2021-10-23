@@ -86,7 +86,6 @@ class _TodosViewState extends State<TodosView> {
       List<Todo> updatedTodos = await Amplify.DataStore.query(Todo.classType);
 
       // update the ui state to reflect fetched todos
-      print(updatedTodos);
       setState(() {
         _todos = updatedTodos;
       });
